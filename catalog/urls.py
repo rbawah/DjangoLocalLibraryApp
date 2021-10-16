@@ -1,7 +1,20 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
+from rest_framework import routers
+
+router = routers.DefaultRouter()
+router.register(r'genres', views.GenreViewSet)
+router.register(r'books', views.BookViewSet)
+router.register(r'authors', views.AuthorViewSet)
+router.register(r'languages', views.LanguageViewSet)
+router.register(r'bookinstances', views.BookInstanceViewSet)
 
 urlpatterns = [
+    path('', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+]
+
+urlpatterns += [
     path('', views.index, name='index'),
     path('books/', views.BookListView.as_view(), name='books'),
     path('book/<int:pk>', views.BookDetailView.as_view(), name='book-detail'), #or using RegEx --> re_path(r'^book/(?P<pk>\d+)$', views.BookDetailView.as_view(), name='book-detail'),

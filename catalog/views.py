@@ -1,7 +1,17 @@
-from django.shortcuts import render
+from .models import Book, Author, BookInstance, Genre, Language
+from .forms import RenewBookForm
+from .serializers import GenreSerializer, BookSerializer, BookInstanceSerializer, AuthorSerializer, LanguageSerializer
+import datetime
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.views import generic
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from rest_framework import viewsets
+from rest_framework import permissions
 
-# Create your views here.
-from .models import Book, Author, BookInstance, Genre
 
 def index(request):
     """View function for home page of site."""
@@ -34,11 +44,10 @@ def index(request):
     return render(request, 'index.html', context=context)
 
 
-from django.views import generic
-
 class BookListView(generic.ListView):
     model = Book
     paginate_by = 2
+
 
 class BookDetailView(generic.DetailView):
     model = Book
@@ -60,10 +69,10 @@ class AuthorListView(generic.ListView):
     model = Author
     paginate_by = 2
 
+
 class AuthorDetailView(generic.DetailView):
     model = Author
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
     """Generic class-based view listing books on loan to current user."""
@@ -72,11 +81,10 @@ class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
-
-
-# challenge at chapter ending
-from django.contrib.auth.mixins import PermissionRequiredMixin
+        return BookInstance.objects.filter(
+            borrower=self.request.user).filter(
+            status__exact='o').order_by(
+            'due_back')
 
 class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
     """Generic class-based view listing all books on loan. Only visible to users with can_mark_returned permission."""
@@ -89,14 +97,6 @@ class LoanedBooksAllListView(PermissionRequiredMixin, generic.ListView):
         return BookInstance.objects.filter(status__exact='o').order_by('due_back')
 
 # View for renew book form
-import datetime
-from django.contrib.auth.decorators import login_required, permission_required
-from django.shortcuts import get_object_or_404
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-
-from catalog.forms import RenewBookForm
-
 @login_required
 @permission_required('catalog.can_mark_returned', raise_exception=True)
 def renew_book_librarian(request, pk):
@@ -130,22 +130,17 @@ def renew_book_librarian(request, pk):
 
     return render(request, 'catalog/book_renew_librarian.html', context)
 
-
-
 ## Generic editing views, for the AuthorModel
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-
-from catalog.models import Author
-
 class AuthorCreate(CreateView):
     model = Author
     fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
     initial = {'date_of_death': '11/06/2020'}
 
+
 class AuthorUpdate(UpdateView):
     model = Author
     fields = '__all__' # Not recommended (potential security issue if more fields added)
+
 
 class AuthorDelete(DeleteView):
     model = Author
@@ -167,4 +162,50 @@ class BookDelete(DeleteView):
     model = Book
     success_url = reverse_lazy('books')
     
-    
+
+"""
+Views for Serializers
+"""
+class GenreViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Genres to be viewed or edited.
+    """
+    queryset = Genre.objects.all().order_by('-name')
+    serializer_class = GenreSerializer
+    #permission_classes = [permissions.IsAuthenticated]
+
+
+class LanguageViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Languages to be viewed or edited.
+    """
+    queryset = Language.objects.all().order_by('-name')
+    serializer_class = LanguageSerializer
+    #permission_classes = [permissions.IsAuthenticated]
+
+
+class BookViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Books to be viewed or edited.
+    """
+    queryset = Book.objects.all().order_by('-title')
+    serializer_class = BookSerializer
+    #permission_classes = [permissions.IsAuthenticated]
+
+
+class BookInstanceViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows BookInstance to be viewed or edited.
+    """
+    queryset = BookInstance.objects.all().order_by('-book')
+    serializer_class = BookInstanceSerializer
+    #permission_classes = [permissions.IsAuthenticated]
+
+
+class AuthorViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows Authors to be viewed or edited.
+    """
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
+    #permission_classes = [permissions.IsAuthenticated]
