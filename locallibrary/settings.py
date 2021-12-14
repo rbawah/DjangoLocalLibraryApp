@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Add our new application
     'catalog.apps.CatalogConfig', #This object was created for us in /catalog/apps.py
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

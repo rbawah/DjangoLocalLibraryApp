@@ -15,17 +15,18 @@
       <div class="col-sm-2">
       {% block sidebar %}
         <ul class="sidebar-nav">
-            <li><a href="{% url 'index' %}">Home</a></li>
-            <li><a href="{% url 'books' %}">All books</a></li>
-            <li><a href="{% url 'authors' %}">All authors</a></li>
+            <h4><a href="{% url 'index' %}">Home</a></h4>
+            <h4><a href="{% url 'books' %}">All Books</a></h4>
+            <h4><a href="{% url 'authors' %}">All Authors</a></h4>
+            <h4><a href="">Genres</a></h4>
             
             <!--Check if user is authenticated, then display the following-->
             {% if user.is_authenticated %}
-                <li>User: {{ user.get_username }}</li>
-                <li><a href="{% url 'my-borrowed' %}">My Borrowed</a></li>
-                <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>
+                <h4>User: {{ user.get_username }}</h4>
+                <h4><a href="{% url 'my-borrowed' %}">My Borrowed</a></h4>
+                <h4><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></h4>
             {% else %}
-                <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>
+                <h4><a href="{% url 'login'%}?next={{request.path}}">Login</a></h4>
             {% endif %} 
         </ul>
      {% endblock %}
