@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 settings.py
+=======
+#settings.py
+>>>>>>> 49a2c317bcb0512b66226e641557cc9b73304c15
 # Text backup files
 *.bak
 

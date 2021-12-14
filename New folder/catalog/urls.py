@@ -10,7 +10,11 @@ router.register(r'languages', views.LanguageViewSet)
 router.register(r'bookinstances', views.BookInstanceViewSet)
 
 urlpatterns = [
+<<<<<<< HEAD
     path('api/', include(router.urls)),
+=======
+    path('', include(router.urls)),
+>>>>>>> 49a2c317bcb0512b66226e641557cc9b73304c15
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 

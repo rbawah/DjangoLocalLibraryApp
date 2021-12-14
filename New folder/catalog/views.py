@@ -172,7 +172,11 @@ class GenreViewSet(viewsets.ModelViewSet):
     """
     queryset = Genre.objects.all().order_by('-name')
     serializer_class = GenreSerializer
+<<<<<<< HEAD
 
+=======
+    #permission_classes = [permissions.IsAuthenticated]
+>>>>>>> 49a2c317bcb0512b66226e641557cc9b73304c15
 
 
 class LanguageViewSet(viewsets.ModelViewSet):
@@ -190,7 +194,11 @@ class BookViewSet(viewsets.ModelViewSet):
     """
     queryset = Book.objects.all().order_by('-title')
     serializer_class = BookSerializer
+<<<<<<< HEAD
 
+=======
+    #permission_classes = [permissions.IsAuthenticated]
+>>>>>>> 49a2c317bcb0512b66226e641557cc9b73304c15
 
 
 class BookInstanceViewSet(viewsets.ModelViewSet):
