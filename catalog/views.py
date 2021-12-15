@@ -1,5 +1,6 @@
 from .models import Book, Author, BookInstance, Genre, Language
 from .forms import RenewBookForm
+from . import owner
 from .serializers import GenreSerializer, BookSerializer, BookInstanceSerializer, AuthorSerializer, LanguageSerializer
 import datetime
 from django.contrib.auth.decorators import login_required, permission_required
@@ -11,6 +12,7 @@ from django.views import generic
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from rest_framework import viewsets
 from rest_framework import permissions
+from catalog.permissions import IsOwnerOrReadOnly
 
 
 def index(request):
@@ -131,37 +133,37 @@ def renew_book_librarian(request, pk):
     return render(request, 'catalog/book_renew_librarian.html', context)
 
 ## Generic editing views, for the AuthorModel
-class AuthorCreate(CreateView):
+class AuthorCreate(owner.OwnerCreateView):
     model = Author
     fields = ['first_name', 'last_name', 'date_of_birth', 'date_of_death']
     initial = {'date_of_death': '11/06/2020'}
 
 
-class AuthorUpdate(UpdateView):
+class AuthorUpdate(owner.OwnerUpdateView):
     model = Author
     fields = '__all__' # Not recommended (potential security issue if more fields added)
 
 
-class AuthorDelete(DeleteView):
+class AuthorDelete(owner.OwnerDeleteView):
     model = Author
     success_url = reverse_lazy('authors')
-    
-    
+
+
 ## Generic editing views, for the Book Model
 from catalog.models import Book
 
-class BookCreate(CreateView):
+class BookCreate(owner.OwnerCreateView):
     model = Book
     fields = ['title', 'author', 'summary', 'isbn', 'genre', 'language']
 
-class BookUpdate(UpdateView):
+class BookUpdate(owner.OwnerUpdateView):
     model = Book
     fields = '__all__' # Not recommended (potential security issue if more fields added)
 
-class BookDelete(DeleteView):
+class BookDelete(owner.OwnerDeleteView):
     model = Book
     success_url = reverse_lazy('books')
-    
+
 
 """
 Views for Serializers
@@ -172,11 +174,8 @@ class GenreViewSet(viewsets.ModelViewSet):
     """
     queryset = Genre.objects.all().order_by('-name')
     serializer_class = GenreSerializer
-<<<<<<< HEAD
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
-=======
-    #permission_classes = [permissions.IsAuthenticated]
->>>>>>> 49a2c317bcb0512b66226e641557cc9b73304c15
 
 
 class LanguageViewSet(viewsets.ModelViewSet):
@@ -185,7 +184,7 @@ class LanguageViewSet(viewsets.ModelViewSet):
     """
     queryset = Language.objects.all().order_by('-name')
     serializer_class = LanguageSerializer
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
 class BookViewSet(viewsets.ModelViewSet):
@@ -194,11 +193,8 @@ class BookViewSet(viewsets.ModelViewSet):
     """
     queryset = Book.objects.all().order_by('-title')
     serializer_class = BookSerializer
-<<<<<<< HEAD
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
-=======
-    #permission_classes = [permissions.IsAuthenticated]
->>>>>>> 49a2c317bcb0512b66226e641557cc9b73304c15
 
 
 class BookInstanceViewSet(viewsets.ModelViewSet):
@@ -207,7 +203,7 @@ class BookInstanceViewSet(viewsets.ModelViewSet):
     """
     queryset = BookInstance.objects.all().order_by('-book')
     serializer_class = BookInstanceSerializer
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
 
 class AuthorViewSet(viewsets.ModelViewSet):
@@ -216,4 +212,4 @@ class AuthorViewSet(viewsets.ModelViewSet):
     """
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
-    #permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
